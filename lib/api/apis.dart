@@ -94,7 +94,7 @@ class APIs {
   }
 
   //For image generation for adhd people
-  static Future<String> getAdhdImage(String lessonContent) async {
+  static Future<String> getAdhdImage(String lessonContent, String subject) async {
     final cachedUrl = await PreferencesHelper.getCachedAdhdImage(lessonContent);
     if (cachedUrl != null) return cachedUrl;
 
@@ -102,14 +102,16 @@ class APIs {
     final uuid = Uuid();
     String randomId = uuid.v4();
     final response = await post(
-      Uri.parse('https://gsc-backend-959284675740.asia-south1.run.app/imagen'),
+      Uri.parse('https://gsc-backend-959284675740.asia-south1.run.app/story-mode'),
       headers: {
         'Content-Type': 'application/json',
       },
       body: jsonEncode({
-        "userId" : user?.uid,
+        "userId" : me.id,
         "lessonId" : randomId,
-        "prompt": lessonContent
+        "prompt": lessonContent,
+        "subject": subject,
+        "level": me.classType
        }),
     );
     if (response.statusCode == 200) {

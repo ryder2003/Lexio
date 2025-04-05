@@ -11,18 +11,14 @@ class PreferencesHelper {
   // Lesson Management ---------------------------------------------------------
   static Future<void> saveLessonDetails({
     required String title,
-    required String description,
-    required String category,
-    required String difficulty,
+    required String subject,
     required String uploadResponse,
     required String filePath,
   }) async {
     final prefs = await SharedPreferences.getInstance();
     final newLesson = {
       'title': title,
-      'description': description,
-      'category': category,
-      'difficulty': difficulty,
+      'subject': subject,
       'uploadResponse': uploadResponse,
       'filePath': filePath,
       'createdAt': DateTime.now().toIso8601String(),

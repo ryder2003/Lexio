@@ -10,21 +10,21 @@ import 'dart:io';
 import '../model/locals.dart';
 
 class CreateLessonPage extends StatefulWidget {
+  const CreateLessonPage({super.key});
+
   @override
   _CreateLessonPageState createState() => _CreateLessonPageState();
 }
 
 class _CreateLessonPageState extends State<CreateLessonPage> {
   final TextEditingController _titleController = TextEditingController();
-  final TextEditingController _descriptionController = TextEditingController();
-  final TextEditingController _categoryController = TextEditingController();
-  String? _selectedDifficulty;
+  final TextEditingController _subjectController = TextEditingController();
   File? _selectedFile;
   String? _fileName;
   bool _isUploading = false;
 
   Future<String> _uploadFileAndGetResponse(
-      String title, String description, String category, String? difficulty) async {
+      String title, String subject) async {
     if (_selectedFile == null) throw Exception("No file selected");
 
     setState(() => _isUploading = true);
@@ -35,9 +35,7 @@ class _CreateLessonPageState extends State<CreateLessonPage> {
 
       request.files.add(await http.MultipartFile.fromPath("image", _selectedFile!.path));
       request.fields["lesson_title"] = title;
-      request.fields["description"] = description;
-      request.fields["category"] = category;
-      request.fields["difficulty"] = difficulty ?? "Beginner";
+      request.fields["subject"] = subject;
 
       var streamedResponse = await request.send();
       var response = await http.Response.fromStream(streamedResponse);
@@ -48,9 +46,7 @@ class _CreateLessonPageState extends State<CreateLessonPage> {
 
         await PreferencesHelper.saveLessonDetails(
           title: title,
-          description: description,
-          category: category,
-          difficulty: difficulty ?? "Beginner",
+          subject: subject,
           uploadResponse: responseString,
           filePath: _selectedFile!.path,
         );
@@ -88,9 +84,9 @@ class _CreateLessonPageState extends State<CreateLessonPage> {
         elevation: 0,
       ),
       body: _isUploading
-          ? Center(child: CircularProgressIndicator())
+          ? const Center(child: CircularProgressIndicator())
           : SingleChildScrollView(
-        padding: EdgeInsets.all(16),
+        padding: const EdgeInsets.all(16),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
@@ -108,65 +104,45 @@ class _CreateLessonPageState extends State<CreateLessonPage> {
                       ? Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Icon(Icons.file_present, size: 40, color: Colors.white70),
-                      SizedBox(height: 5),
+                      const Icon(Icons.file_present, size: 40, color: Colors.white70),
+                      const SizedBox(height: 5),
                       Text("Tap to select a file", style: GoogleFonts.poppins(color: Colors.white70)),
                     ],
                   )
                       : Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Icon(Icons.check_circle, size: 40, color: Colors.green),
-                      SizedBox(height: 5),
+                      const Icon(Icons.check_circle, size: 40, color: Colors.green),
+                      const SizedBox(height: 5),
                       Text("Selected: $_fileName", style: GoogleFonts.poppins(color: Colors.white70)),
                     ],
                   ),
                 ),
               ),
             ),
-            SizedBox(height: 20),
+            const SizedBox(height: 20),
             TextField(
               controller: _titleController,
-              style: TextStyle(color: Colors.white),
+              style: const TextStyle(color: Colors.white),
               decoration: _inputDecoration("Lesson Title"),
             ),
-            SizedBox(height: 20),
+            const SizedBox(height: 20),
             TextField(
-              controller: _descriptionController,
-              style: TextStyle(color: Colors.white),
+              controller: _subjectController,
+              style: const TextStyle(color: Colors.white),
               maxLines: 3,
-              decoration: _inputDecoration("Description"),
+              decoration: _inputDecoration("Subject"),
             ),
-            SizedBox(height: 20),
-            TextField(
-              controller: _categoryController,
-              style: TextStyle(color: Colors.white),
-              decoration: _inputDecoration("Category"),
-            ),
-            SizedBox(height: 20),
-            DropdownButtonFormField<String>(
-              dropdownColor: Colors.black,
-              style: GoogleFonts.poppins(color: Colors.white),
-              decoration: _inputDecoration("Select Difficulty Level"),
-              items: ["Beginner", "Intermediate", "Advanced"]
-                  .map((level) => DropdownMenuItem(value: level, child: Text(level)))
-                  .toList(),
-              onChanged: (value) {
-                setState(() {
-                  _selectedDifficulty = value;
-                });
-              },
-              hint: Text("Select Difficulty Level", style: GoogleFonts.poppins(color: Colors.white70)),
-            ),
-            SizedBox(height: 30),
+
+
+
+            const SizedBox(height: 30),
             ElevatedButton(
               onPressed: () async {
                 if (_selectedFile != null) {
                   final responseFuture = _uploadFileAndGetResponse(
                     _titleController.text,
-                    _descriptionController.text,
-                    _categoryController.text,
-                    _selectedDifficulty,
+                    _subjectController.text,
                   );
 
                   Navigator.push(
@@ -174,18 +150,19 @@ class _CreateLessonPageState extends State<CreateLessonPage> {
                     MaterialPageRoute(
                       builder: (_) => ResultsPage(
                         user: APIs.me,
+                        subject: _subjectController.text,
                         futureFileSummary: responseFuture,
                       ),
                     ),
                   );
                 } else {
                   ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(content: Text("Please select a file first")),
+                    const SnackBar(content: Text("Please select a file first")),
                   );
                 }
               },
               style: ElevatedButton.styleFrom(
-                padding: EdgeInsets.symmetric(horizontal: 50, vertical: 15),
+                padding: const EdgeInsets.symmetric(horizontal: 50, vertical: 15),
                 backgroundColor: Colors.deepPurpleAccent,
                 shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
               ),

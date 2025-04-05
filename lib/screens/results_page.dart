@@ -4,19 +4,20 @@ import 'package:gsccsg/model/my_user.dart';
 import 'package:gsccsg/screens/homepage.dart';
 import 'package:flutter_colorpicker/flutter_colorpicker.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-
 import '../api/apis.dart';
 import 'chat_screen.dart';
 
 class ResultsPage extends StatefulWidget {
   final MyUser user;
   final String? file;
+  final String subject;
   final Future<String>? futureFileSummary;
 
   const ResultsPage({
     super.key,
     required this.user,
     this.file,
+    required this.subject,
     this.futureFileSummary,
   });
 
@@ -467,7 +468,7 @@ class _ResultsPageState extends State<ResultsPage> {
 
                 if (hasADHD) {
                   return FutureBuilder<String>(
-                    future: APIs.getAdhdImage(fileContent),
+                    future: APIs.getAdhdImage(fileContent, widget.subject),
                     builder: (context, imageSnapshot) {
                       // Handle loading state
                       if (imageSnapshot.connectionState == ConnectionState.waiting) {
@@ -582,8 +583,8 @@ class _ResultsPageState extends State<ResultsPage> {
                                 builder: (_) => ChatScreen(initialLesson: fileContent, user: widget.user),
                               ),
                             ),
-                            child: Text('Ask Questions'),
-                          ) : SizedBox.shrink(),
+                            child: const Text('Ask Questions'),
+                          ) : const SizedBox.shrink(),
 
                         const SizedBox(height: 30),
                         SafeArea(
