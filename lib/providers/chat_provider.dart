@@ -1,22 +1,29 @@
 import 'dart:convert';
 
 import 'package:flutter/cupertino.dart';
+import 'package:gsccsg/model/my_user.dart';
 import 'package:http/http.dart';
+import 'package:uuid/uuid.dart';
 
 import '../model/chat_message.dart';
 
 class ChatProvider with ChangeNotifier {
+
   List<ChatMessage> _messages = [];
   final String initialLesson;
 
   ChatProvider(this.initialLesson) {
     _initializeChat();
+
   }
 
   List<ChatMessage> get messages => _messages;
 
   Future<void> _initializeChat() async {
     // Send initial lesson to backend
+    final uuid = Uuid();
+    String randomId = uuid.v4();
+
     final response = await post(
       Uri.parse('https://gsc-backend-959284675740.asia-south1.run.app/chat'),
       body: jsonEncode({"lesson": initialLesson}),
@@ -30,7 +37,7 @@ class ChatProvider with ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> sendMessage(String message) async {
+  Future<void> sendMessage(String message, MyUser user) async {
     _messages.add(ChatMessage(
       content: message,
       isUser: true,
@@ -41,8 +48,17 @@ class ChatProvider with ChangeNotifier {
     // Get bot response
     final response = await post(
       Uri.parse('https://gsc-backend-959284675740.asia-south1.run.app/chat'),
-      body: jsonEncode({"message": message}),
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: jsonEncode({
+        "userId" : user.id,
+        "userInput": message,
+      }),
     );
+    print(response.statusCode);
+
+    print(response.body);
 
     _messages.add(ChatMessage(
       content: jsonDecode(response.body)['response'],

@@ -1,14 +1,16 @@
 // screens/chat_screen.dart
 import 'package:flutter/material.dart';
+import 'package:gsccsg/model/my_user.dart';
 import 'package:provider/provider.dart';
 import '../providers/chat_provider.dart';
 import '../widgets/chat_bubble.dart';
 import '../widgets/chat_input.dart';
 
 class ChatScreen extends StatelessWidget {
+  final MyUser user;
   final String initialLesson;
 
-  const ChatScreen({super.key, required this.initialLesson});
+  const ChatScreen({super.key, required this.initialLesson, required this.user});
 
   @override
   Widget build(BuildContext context) {
@@ -44,7 +46,7 @@ class ChatScreen extends StatelessWidget {
               builder: (context, provider, _) {
                 return SafeArea(
                   child: ChatInput(
-                    onSend: (message) => provider.sendMessage(message),
+                    onSend: (message) => provider.sendMessage(message, user),
                   ),
                 );
               },

@@ -579,7 +579,7 @@ class _ResultsPageState extends State<ResultsPage> {
                             onPressed: () => Navigator.push(
                               context,
                               MaterialPageRoute(
-                                builder: (_) => ChatScreen(initialLesson: fileContent),
+                                builder: (_) => ChatScreen(initialLesson: fileContent, user: widget.user),
                               ),
                             ),
                             child: Text('Ask Questions'),
