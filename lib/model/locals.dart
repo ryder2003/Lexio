@@ -10,13 +10,19 @@ class PreferencesHelper {
 
   // Lesson Management ---------------------------------------------------------
   static Future<void> saveLessonDetails({
+    required String userId,
     required String title,
     required String subject,
     required String uploadResponse,
     required String filePath,
   }) async {
     final prefs = await SharedPreferences.getInstance();
+
+    // Get existing lessons FOR THIS USER
+    final existingLessons = await getLessonList(userId);
+
     final newLesson = {
+      'userId': userId,
       'title': title,
       'subject': subject,
       'uploadResponse': uploadResponse,
@@ -25,12 +31,26 @@ class PreferencesHelper {
       'id': DateTime.now().millisecondsSinceEpoch.toString(),
     };
 
-    final existingLessons = await getLessonList();
     existingLessons.add(newLesson);
-    await prefs.setString(_lessonsKey, jsonEncode(existingLessons));
+
+    // Get ALL lessons from storage
+    final allLessons = await _getAllLessons();
+
+    // Remove existing entries for this user
+    allLessons.removeWhere((lesson) => lesson['userId'] == userId);
+
+    // Add updated list
+    allLessons.addAll(existingLessons);
+
+    await prefs.setString(_lessonsKey, jsonEncode(allLessons));
   }
 
-  static Future<List<Map<String, dynamic>>> getLessonList() async {
+  static Future<List<Map<String, dynamic>>> getLessonList(String userId) async {
+    final allLessons = await _getAllLessons();
+    return allLessons.where((lesson) => lesson['userId'] == userId).toList();
+  }
+
+  static Future<List<Map<String, dynamic>>> _getAllLessons() async {
     final prefs = await SharedPreferences.getInstance();
     final lessonsData = prefs.getString(_lessonsKey);
     if (lessonsData != null) {
@@ -40,9 +60,11 @@ class PreferencesHelper {
     return [];
   }
 
-  static Future<void> clearAllLessons() async {
+  static Future<void> clearUserLessons(String userId) async {
     final prefs = await SharedPreferences.getInstance();
-    await prefs.remove(_lessonsKey);
+    final allLessons = await _getAllLessons();
+    allLessons.removeWhere((lesson) => lesson['userId'] == userId);
+    await prefs.setString(_lessonsKey, jsonEncode(allLessons));
   }
 
   // ADHD Image Caching --------------------------------------------------------

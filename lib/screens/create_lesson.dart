@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:gsccsg/api/apis.dart';
+import 'package:gsccsg/model/my_user.dart';
 import 'package:gsccsg/screens/results_page.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
@@ -10,7 +11,8 @@ import 'dart:io';
 import '../model/locals.dart';
 
 class CreateLessonPage extends StatefulWidget {
-  const CreateLessonPage({super.key});
+  final MyUser user;
+  const CreateLessonPage({super.key, required this.user});
 
   @override
   _CreateLessonPageState createState() => _CreateLessonPageState();
@@ -45,6 +47,7 @@ class _CreateLessonPageState extends State<CreateLessonPage> {
         String responseString = responseData.toString();
 
         await PreferencesHelper.saveLessonDetails(
+          userId: widget.user.id,
           title: title,
           subject: subject,
           uploadResponse: responseString,

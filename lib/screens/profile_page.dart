@@ -149,12 +149,6 @@ class _ProfilePageState extends State<ProfilePage> {
                     //sign out from the app
                     await APIs.auth.signOut().then((value) async{
                       await GoogleSignIn().signOut().then((value){
-                        //For hiding progress bar
-                        Navigator.pop(context);
-
-                        //For moving to home screen so nothing remains in back stack after push replacement
-                        Navigator.pop(context);
-
                         Navigator.pushReplacement(context, MaterialPageRoute(builder: (_)=>const Login()));
                       });
                     });

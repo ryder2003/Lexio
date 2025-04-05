@@ -11,8 +11,9 @@ class ChatProvider with ChangeNotifier {
 
   List<ChatMessage> _messages = [];
   final String initialLesson;
+  final MyUser user;
 
-  ChatProvider(this.initialLesson) {
+  ChatProvider(this.initialLesson, this.user) {
     _initializeChat();
 
   }
@@ -26,7 +27,13 @@ class ChatProvider with ChangeNotifier {
 
     final response = await post(
       Uri.parse('https://gsc-backend-959284675740.asia-south1.run.app/chat'),
-      body: jsonEncode({"lesson": initialLesson}),
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: jsonEncode({
+        "userId" : user.id,
+        "userInput": initialLesson,
+      }),
     );
     // Add initial bot response
     _messages.add(ChatMessage(
@@ -37,7 +44,7 @@ class ChatProvider with ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> sendMessage(String message, MyUser user) async {
+  Future<void> sendMessage(String message) async {
     _messages.add(ChatMessage(
       content: message,
       isUser: true,

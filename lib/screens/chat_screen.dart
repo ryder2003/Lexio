@@ -15,7 +15,7 @@ class ChatScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ChangeNotifierProvider(
-      create: (context) => ChatProvider(initialLesson),
+      create: (context) => ChatProvider(initialLesson, user),
       child: Scaffold(
         appBar: AppBar(
           title: const Text('Dyscalculia Assistant'),
@@ -46,7 +46,7 @@ class ChatScreen extends StatelessWidget {
               builder: (context, provider, _) {
                 return SafeArea(
                   child: ChatInput(
-                    onSend: (message) => provider.sendMessage(message, user),
+                    onSend: (message) => provider.sendMessage(message),
                   ),
                 );
               },

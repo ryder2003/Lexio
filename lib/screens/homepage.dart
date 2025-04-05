@@ -1,4 +1,6 @@
 // homepage.dart (complete updated version)
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:gsccsg/model/locals.dart';
@@ -17,20 +19,21 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
+  String? _currentUserId;
+  StreamSubscription? _userSubscription;
+
   double overallProgress = 0.0;
   List<Map<String, dynamic>> lessons = [];
   bool _isLoading = true;
 
-  Future<void> _loadLessons() async {
+  Future<void> _loadLessons(String userID) async {
     setState(() => _isLoading = true);
     try {
-      var lessonList = await PreferencesHelper.getLessonList();
+      var lessonList = await PreferencesHelper.getLessonList(APIs.me.id);
       setState(() {
         lessons = lessonList.map((lesson) => {
           "title": lesson["title"],
-          "description": lesson["description"],
-          "category": lesson["category"],
-          "difficulty": lesson["difficulty"],
+          "subject": lesson["subject"],
           "response": lesson["uploadResponse"],
           "progress": 0.0,
           "buttonText": "Continue"
@@ -49,7 +52,21 @@ class _HomePageState extends State<HomePage> {
   void initState() {
     super.initState();
     APIs.getSelfInfo();
-    _loadLessons();
+    _userSubscription = APIs.getUserInfo().listen((userSnapshot) {
+      if (userSnapshot.docs.isNotEmpty) {
+        final user = MyUser.fromJson(userSnapshot.docs.first.data());
+        if (user.id != _currentUserId) {
+          setState(() => _currentUserId = user.id);
+          _loadLessons(APIs.me.id); // Load lessons for this user
+        }
+      }
+    });
+  }
+
+  @override
+  void dispose() {
+    _userSubscription?.cancel();
+    super.dispose();
   }
 
   @override
@@ -58,8 +75,8 @@ class _HomePageState extends State<HomePage> {
       backgroundColor: Colors.white,
       floatingActionButton: FloatingActionButton(
         onPressed: () {
-          Navigator.push(context, MaterialPageRoute(builder: (_) => CreateLessonPage()))
-              .then((_) => _loadLessons());
+          Navigator.push(context, MaterialPageRoute(builder: (_) => CreateLessonPage(user: APIs.me,)))
+              .then((_) => _loadLessons(APIs.me.id));
         },
         backgroundColor: Colors.pinkAccent,
         child: const Icon(Icons.add, color: Colors.white),
@@ -132,7 +149,7 @@ class _HomePageState extends State<HomePage> {
                     ),
                     const SizedBox(height: 16),
                     _isLoading
-                        ? Center(child: CircularProgressIndicator())
+                        ? const Center(child: CircularProgressIndicator())
                         : lessons.isEmpty
                         ? Padding(
                       padding: const EdgeInsets.symmetric(vertical: 40),
@@ -199,7 +216,7 @@ class _HomePageState extends State<HomePage> {
           );
         }
 
-        MyUser user = MyUser.fromJson(data.first.data() as Map<String, dynamic>);
+        MyUser user = MyUser.fromJson(data.first.data());
 
         return Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -255,7 +272,7 @@ class _HomePageState extends State<HomePage> {
   Widget _buildLessonCards(List<Map<String, dynamic>> lessons) {
     return ListView.builder(
       shrinkWrap: true,
-      physics: NeverScrollableScrollPhysics(),
+      physics: const NeverScrollableScrollPhysics(),
       itemCount: lessons.length,
       itemBuilder: (context, index) {
         final lesson = lessons[index];
@@ -285,45 +302,31 @@ class _HomePageState extends State<HomePage> {
                       fontSize: 18,
                       fontWeight: FontWeight.bold,
                     ),
-                  ),
-                  Container(
-                    padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                    decoration: BoxDecoration(
-                      color: Colors.deepPurpleAccent.withOpacity(0.2),
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    child: Text(
-                      lesson["difficulty"] ?? "",
-                      style: GoogleFonts.poppins(
-                        fontSize: 12,
-                        color: Colors.deepPurpleAccent,
-                      ),
-                    ),
-                  ),
+                  )
                 ],
               ),
-              if (lesson["description"] != null && lesson["description"].toString().isNotEmpty)
+              if (lesson["subject"] != null && lesson["subject"].toString().isNotEmpty)
                 Padding(
                   padding: const EdgeInsets.only(top: 8),
                   child: Text(
-                    lesson["description"] ?? "",
+                    lesson["subject"] ?? "",
                     style: GoogleFonts.poppins(
                       fontSize: 14,
                       color: Colors.grey[600],
                     ),
                   ),
                 ),
-              SizedBox(height: 12),
+              const SizedBox(height: 12),
               ClipRRect(
                 borderRadius: BorderRadius.circular(8),
                 child: LinearProgressIndicator(
                   value: lesson["progress"],
                   minHeight: 8,
                   backgroundColor: Colors.grey.shade300,
-                  valueColor: AlwaysStoppedAnimation<Color>(Colors.deepPurpleAccent),
+                  valueColor: const AlwaysStoppedAnimation<Color>(Colors.deepPurpleAccent),
                 ),
               ),
-              SizedBox(height: 12),
+              const SizedBox(height: 12),
               Align(
                 alignment: Alignment.centerRight,
                 child: ElevatedButton(
@@ -361,60 +364,4 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
-  Widget _buildFamousLessonCards(List<Map<String, dynamic>> famousData) {
-    return SizedBox(
-      height: 150,
-      child: ListView.separated(
-        scrollDirection: Axis.horizontal,
-        itemCount: famousData.length,
-        separatorBuilder: (_, __) => const SizedBox(width: 16),
-        itemBuilder: (context, index) {
-          final lesson = famousData[index];
-          return Container(
-            width: 200,
-            padding: const EdgeInsets.all(16),
-            decoration: BoxDecoration(
-              color: Colors.blue.shade50,
-              borderRadius: BorderRadius.circular(16),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black.withOpacity(0.05),
-                  blurRadius: 6,
-                  offset: const Offset(0, 3),
-                ),
-              ],
-            ),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  lesson["title"] ?? "",
-                  style: GoogleFonts.poppins(
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.black87,
-                  ),
-                ),
-                const Spacer(),
-                Text(
-                  "${(lesson["progress"] * 100).round()}% Completed",
-                  style: GoogleFonts.poppins(fontSize: 14, color: Colors.grey[600]),
-                ),
-                const SizedBox(height: 6),
-                ClipRRect(
-                  borderRadius: BorderRadius.circular(8),
-                  child: LinearProgressIndicator(
-                    value: lesson["progress"],
-                    minHeight: 8,
-                    backgroundColor: Colors.grey.shade300,
-                    valueColor: AlwaysStoppedAnimation<Color>(Colors.deepPurpleAccent),
-                  ),
-                ),
-              ],
-            ),
-          );
-        },
-      ),
-    );
-  }
 }
