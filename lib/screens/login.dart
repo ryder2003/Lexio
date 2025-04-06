@@ -6,6 +6,7 @@ import 'package:gsccsg/screens/homepage.dart';
 import 'package:gsccsg/api/apis.dart';
 import 'package:gsccsg/helper/dialogs.dart';
 import 'package:gsccsg/screens/login_form.dart';
+import 'dart:math' as math;
 
 class Login extends StatefulWidget {
   const Login({super.key});
@@ -14,26 +15,49 @@ class Login extends StatefulWidget {
   State<Login> createState() => _LoginState();
 }
 
-class _LoginState extends State<Login> with SingleTickerProviderStateMixin {
+class _LoginState extends State<Login> with TickerProviderStateMixin {
   late AnimationController _controller;
   late Animation<double> _fadeAnimation;
+  AnimationController? _bubbleController;
+  bool _isInitialized = false;
 
-  @override
-  void initState() {
-    super.initState();
-    _controller = AnimationController(
-      vsync: this,
-      duration: const Duration(seconds: 2),
-    );
-    _fadeAnimation = CurvedAnimation(parent: _controller, curve: Curves.easeIn);
-    _controller.forward();
-  }
 
   @override
   void dispose() {
     _controller.dispose();
+    _bubbleController?.dispose();
     super.dispose();
   }
+
+  @override
+  void initState() {
+    super.initState();
+
+    // Bubble controller for animated bubbles
+    _bubbleController = AnimationController(
+      vsync: this,
+      duration: const Duration(seconds: 5),
+    )..repeat(reverse: true);
+
+    // Single controller for fade animation
+    _controller = AnimationController(
+      vsync: this,
+      duration: const Duration(seconds: 2),
+    );
+
+    _fadeAnimation = CurvedAnimation(
+      parent: _controller,
+      curve: Curves.easeIn,
+    );
+
+    _controller.forward();
+
+    // mark as ready
+    setState(() {
+      _isInitialized = true;
+    });
+  }
+
 
   _handleGoogleButtonClick() {
     Dialogs.showProgressLoader(context);
@@ -46,7 +70,7 @@ class _LoginState extends State<Login> with SingleTickerProviderStateMixin {
         } else {
           await APIs.createUser().then((value) {
             Navigator.pushReplacement(
-                context, MaterialPageRoute(builder: (_) => UserFormPage()));
+                context, MaterialPageRoute(builder: (_) => const UserFormPage()));
           });
         }
       }
@@ -73,136 +97,167 @@ class _LoginState extends State<Login> with SingleTickerProviderStateMixin {
 
   @override
   Widget build(BuildContext context) {
+    if (!_isInitialized) return const SizedBox();
     return Scaffold(
-      // appBar: AppBar(
-      //   title: const Text(
-      //     "Welcome to GSCCSG",
-      //     style: TextStyle(
-      //       fontSize: 22,
-      //       fontWeight: FontWeight.bold,
-      //       color: Colors.white,
-      //     ),
-      //   ),
-      //   centerTitle: true,
-      //   backgroundColor: Colors.black,
-      //   elevation: 6,
-      //   shadowColor: Colors.purple,
-      // ),
-      body: Container(
-        decoration: const BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-            colors: [Colors.black, Colors.deepPurple],
-          ),
-        ),
-        child: Center(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Stack(
-                alignment: Alignment.center,
+      backgroundColor: Colors.white,
+      body: Center(
+        child: Stack(
+          children: [
+            // Use Positioned.fill to define bounds
+            Positioned.fill(
+              child: Stack(
                 children: [
-                  Positioned(
-                    left: 5,
-                    top: 5,
-                    child: Opacity(
-                      opacity: 0.4,
-                      child: Image.asset(
-                        'assets/images/logo.png',
-                        width: 160,
-                        color: Colors.purpleAccent.withOpacity(0.5),
-                      ),
-                    ),
+                  // Bubbles
+                  _animatedBubble(
+                    animation: _bubbleController!,
+                    offsetY: 80,
+                    offsetX: 30,
+                    size: 60,
+                    color: Colors.purple.withOpacity(0.2),
                   ),
-                  FadeTransition(
-                    opacity: _fadeAnimation,
-                    child: Image.asset('assets/images/logo.png', width: 150),
+                  _animatedBubble(
+                    animation: _bubbleController!,
+                    offsetY: 200,
+                    offsetX: MediaQuery.of(context).size.width - 90,
+                    size: 40,
+                    color: Colors.lightBlue.withOpacity(0.2),
                   ),
-                  Positioned(
-                    top: -20,
-                    left: -20,
-                    child: Container(
-                      width: 80,
-                      height: 80,
-                      decoration: BoxDecoration(
-                        shape: BoxShape.circle,
-                        color: Colors.purpleAccent.withOpacity(0.3),
-                      ),
-                    ),
+                  _animatedBubble(
+                    animation: _bubbleController!,
+                    offsetY: MediaQuery.of(context).size.height - 200,
+                    offsetX: 60,
+                    size: 70,
+                    color: Colors.pinkAccent.withOpacity(0.15),
                   ),
-                  Positioned(
-                    bottom: -20,
-                    right: -20,
-                    child: Container(
-                      width: 100,
-                      height: 100,
-                      decoration: BoxDecoration(
-                        shape: BoxShape.circle,
-                        color: Colors.deepPurple.withOpacity(0.2),
-                      ),
-                    ),
-                  ),
-                  Positioned(
-                    top: 30,
-                    right: 40,
-                    child: Icon(
-                      Icons.blur_on,
-                      size: 50,
-                      color: Colors.purpleAccent.withOpacity(0.5),
-                    ),
+                  _animatedBubble(
+                    animation: _bubbleController!,
+                    offsetY: MediaQuery.of(context).size.height - 120,
+                    offsetX: MediaQuery.of(context).size.width - 90,
+                    size: 50,
+                    color: Colors.orangeAccent.withOpacity(0.15),
                   ),
                 ],
               ),
-              const SizedBox(height: 60),
-              GestureDetector(
-                onTap: () => _handleGoogleButtonClick(),
-                child: MouseRegion(
-                  onEnter: (_) => setState(() {}),
-                  child: AnimatedContainer(
-                    duration: const Duration(milliseconds: 300),
-                    padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 18),
-                    decoration: BoxDecoration(
-                      gradient: const LinearGradient(
-                        colors: [Colors.black, Colors.deepPurple],
+            ),
+
+            // Main content overlaid on top
+            Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  const Spacer(flex: 3),
+                  ScaleTransition(
+                    scale: _fadeAnimation,
+                    child: ShaderMask(
+                      shaderCallback: (bounds) => const LinearGradient(
+                        colors: [Colors.deepPurple, Colors.purpleAccent],
                         begin: Alignment.topLeft,
                         end: Alignment.bottomRight,
+                      ).createShader(bounds),
+                      child: const Text(
+                        'Lexio',
+                        style: TextStyle(
+                          fontSize: 60,
+                          fontWeight: FontWeight.w900,
+                          color: Colors.white,
+                          letterSpacing: 3,
+                        ),
                       ),
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.purpleAccent.withOpacity(0.8),
-                          blurRadius: 12,
-                          spreadRadius: 3,
-                          offset: const Offset(0, 6),
-                        ),
-                      ],
-                      borderRadius: BorderRadius.circular(40),
-                      border: Border.all(color: Colors.white.withOpacity(0.3), width: 1.5),
-                    ),
-                    child: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        SvgPicture.asset('assets/images/google.svg', height: 20, width: 20),
-                        const SizedBox(width: 16),
-                        const Text(
-                          "Sign in with Google",
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 18,
-                            fontWeight: FontWeight.bold,
-                            letterSpacing: 0.9,
-                          ),
-                        ),
-                      ],
                     ),
                   ),
-                ),
+                  const SizedBox(height: 20),
+                  const Text(
+                    "Making reading easier for all",
+                    style: TextStyle(
+                      fontSize: 18,
+                      color: Colors.black87,
+                      letterSpacing: 1.2,
+                      fontStyle: FontStyle.italic,
+                    ),
+                  ),
+                  const SizedBox(height: 20,),
+                  const Spacer(),
+                  GestureDetector(
+                    onTap: _handleGoogleButtonClick,
+                    child: MouseRegion(
+                      cursor: SystemMouseCursors.click,
+                      child: AnimatedContainer(
+                        duration: const Duration(milliseconds: 300),
+                        padding: const EdgeInsets.symmetric(horizontal: 28, vertical: 16),
+                        decoration: BoxDecoration(
+                          gradient: const LinearGradient(
+                            colors: [Colors.white, Colors.lightBlueAccent],
+                            begin: Alignment.topLeft,
+                            end: Alignment.bottomRight,
+                          ),
+                          borderRadius: BorderRadius.circular(40),
+                          border: Border.all(
+                              color: Colors.deepPurpleAccent.withOpacity(0.3),
+                              width: 1.5),
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.deepPurple.withOpacity(0.08),
+                              blurRadius: 10,
+                              offset: const Offset(0, 4),
+                            ),
+                          ],
+                        ),
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            SvgPicture.asset('assets/images/google.svg',
+                                height: 20, width: 20),
+                            const SizedBox(width: 30),
+                            const Text(
+                              "Sign in with Google",
+                              style: TextStyle(
+                                color: Colors.black87,
+                                fontSize: 19,
+                                fontWeight: FontWeight.w600,
+                                letterSpacing: 0.5,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
+                  const Spacer(flex: 3),
+                ],
               ),
-            ],
-          ),
+            ),
+          ],
         ),
       ),
     );
-
   }
+
+  Widget _animatedBubble({
+    required Animation<double> animation,
+    required double offsetY,
+    required double offsetX,
+    required double size,
+    required Color color,
+  }) {
+    return AnimatedBuilder(
+      animation: animation,
+      builder: (context, child) {
+        double floatY = offsetY + 10 * math.sin(animation.value * 2 * math.pi);
+        return Positioned(
+          top: floatY,
+          left: offsetX,
+          child: Container(
+            width: size,
+            height: size,
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              color: color,
+            ),
+          ),
+        );
+      },
+    );
+  }
+
+
 }

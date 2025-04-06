@@ -165,11 +165,9 @@ class _ProfilePageState extends State<ProfilePage> {
                     if (!mounted) return;
 
                     // Navigate to login screen with clear stack
-                    Navigator.pushAndRemoveUntil(
+                    Navigator.pushReplacement(
                       context,
-                      MaterialPageRoute(builder: (_) => const Login()),
-                          (route) => false, // Remove all routes
-                    );
+                      MaterialPageRoute(builder: (_) => const Login()));
 
                   }, // Empty functionality for now
                   style: ElevatedButton.styleFrom(

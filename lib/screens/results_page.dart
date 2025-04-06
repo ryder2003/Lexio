@@ -45,10 +45,10 @@ class _ResultsPageState extends State<ResultsPage> {
   // Supported fonts
   final List<String> _supportedFonts = [
     'OpenDyslexic',
-    'Arial',
+    'Hyperlegible',
     'Verdana',
     'Lexend',
-    'Comic Sans MS',
+    'Comic Neu',
     'Times New Roman',
   ];
 
@@ -365,9 +365,9 @@ class _ResultsPageState extends State<ResultsPage> {
   String? _getFontFamily(String font) {
     if (font == 'OpenDyslexic') return 'OpenDyslexic';
     if (font == 'Lexend') return 'Lexend';
-    if (font == 'Arial') return 'Arial';
+    if (font == 'Hyperlegible') return 'Hyperlegible';
     if (font == 'Verdana') return 'Verdana';
-    if (font == 'Comic Sans MS') return 'Comic Sans MS';
+    if (font == 'Comic Neu') return 'Comic Neu';
     if (font == 'Times New Roman') return 'Times New Roman';
 
     return font;
@@ -389,13 +389,13 @@ class _ResultsPageState extends State<ResultsPage> {
     if (_selectedFont == 'Lexend') {
       return GoogleFonts.lexend(textStyle: baseStyle);
     }
-    if (_selectedFont == 'Arial') {
-      return GoogleFonts.akatab(textStyle: baseStyle);
+    if (_selectedFont == 'Hyperlegible') {
+      return GoogleFonts.atkinsonHyperlegible(textStyle: baseStyle);
     }
     if (_selectedFont == 'Verdana') {
-      return GoogleFonts.varela(textStyle: baseStyle);
+      return baseStyle.copyWith(fontFamily: 'Verdana');
     }
-    if (_selectedFont == 'Comic Sans RR') {
+    if (_selectedFont == 'Comic Neu') {
       return GoogleFonts.comicNeue(textStyle: baseStyle);
     }
     if (_selectedFont == 'Times New Roman') {

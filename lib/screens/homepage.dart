@@ -58,6 +58,7 @@ class _HomePageState extends State<HomePage> {
         }
       }
     });
+    _loadLessons(APIs.me.id);
   }
 
   @override
