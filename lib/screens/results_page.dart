@@ -420,6 +420,10 @@ class _ResultsPageState extends State<ResultsPage> {
     return Scaffold(
       backgroundColor: _backgroundColor,
       appBar: AppBar(
+        leading: IconButton(onPressed: (){
+          _resetSettings();
+          Navigator.pop(context);
+          }, icon: Icon(Icons.arrow_back, color: Colors.white,)),
         title: Text("Results", style: _getHeaderTextStyle()),
         backgroundColor: Colors.transparent,
         elevation: 0,
@@ -518,7 +522,7 @@ class _ResultsPageState extends State<ResultsPage> {
                       return Column(
                         children: [
                           SizedBox(
-                            height: 350,
+                            height: 450,
                             child: PageView.builder(
                               itemCount: images.length,
                               controller: PageController(viewportFraction: 0.9),
@@ -574,33 +578,19 @@ class _ResultsPageState extends State<ResultsPage> {
                             ),
                           ),
                           const SizedBox(height: 15),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: List.generate(images.length, (index) {
-                              return Container(
-                                width: 8,
-                                height: 8,
-                                margin: const EdgeInsets.symmetric(horizontal: 4),
-                                decoration: BoxDecoration(
-                                  shape: BoxShape.circle,
-                                  color: _textColor.withOpacity(
-                                      index == 0 ? 0.9 : 0.4), // Update this with actual page index
-                                ),
-                              );
-                            }),
-                          ),
-                          const SizedBox(height: 20),
-                          Text("Visual Learning Aids",
-                              style: _getHeaderTextStyle()),
 
-                          const SizedBox(height:70),
+                          const SizedBox(height: 20),
+
+                          const SizedBox(height:50),
 
                           SafeArea(
                             child: ElevatedButton(
-                              onPressed: () => Navigator.pushReplacement(
-                                  context,
-                                  MaterialPageRoute(
-                                      builder: (_) => const HomePage())),
+                              onPressed: (){
+                                _resetSettings();
+                                Navigator.pushReplacement(
+                                  context, MaterialPageRoute(builder: (_) => const HomePage()));
+
+                                },
                               style: ElevatedButton.styleFrom(
                                 backgroundColor: Colors.deepPurpleAccent,
                                 padding: const EdgeInsets.symmetric(
@@ -658,10 +648,12 @@ class _ResultsPageState extends State<ResultsPage> {
                         const SizedBox(height: 30),
                         SafeArea(
                           child: ElevatedButton(
-                            onPressed: () => Navigator.pushReplacement(
+                            onPressed: (){
+                              _resetSettings();
+                              Navigator.pushReplacement(
                                 context,
                                 MaterialPageRoute(
-                                    builder: (_) => const HomePage())),
+                                    builder: (_) => const HomePage()));},
                             style: ElevatedButton.styleFrom(
                               backgroundColor: Colors.deepPurpleAccent,
                               padding: const EdgeInsets.symmetric(

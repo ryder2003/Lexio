@@ -6,6 +6,7 @@ import 'package:gsccsg/api/apis.dart';
 import 'package:gsccsg/model/my_user.dart';
 import 'package:gsccsg/screens/results_page.dart';
 import 'package:http/http.dart' as http;
+import 'package:http/http.dart';
 import 'dart:convert';
 import 'dart:io';
 import '../model/locals.dart';
@@ -32,6 +33,7 @@ class _CreateLessonPageState extends State<CreateLessonPage> {
     setState(() => _isUploading = true);
 
     try {
+      // First API call to upload file and get initial response
       var uri = Uri.parse("https://gsc-backend-959284675740.asia-south1.run.app/image-summary");
       var request = http.MultipartRequest("POST", uri);
 
@@ -44,17 +46,20 @@ class _CreateLessonPageState extends State<CreateLessonPage> {
 
       if (response.statusCode == 200) {
         var responseData = jsonDecode(response.body);
-        String responseString = responseData['summary'].toString();
+        String initialResponse = responseData['summary'].toString();
+
+        // Second API call to process the initial response
+        String finalResponse = await _processInitialResponse(initialResponse, title, subject);
 
         await PreferencesHelper.saveLessonDetails(
           userId: widget.user.id,
           title: title,
           subject: subject,
-          uploadResponse: responseString,
+          uploadResponse: finalResponse,
           filePath: _selectedFile!.path,
         );
 
-        return responseString;
+        return finalResponse;
       } else {
         throw Exception("Upload failed: ${response.body}");
       }
@@ -63,10 +68,32 @@ class _CreateLessonPageState extends State<CreateLessonPage> {
     }
   }
 
+  Future<String> _processInitialResponse(String initialResponse, String title, String subject) async {
+    try {
+      final response = await post(
+        Uri.parse('https://gsc-backend-959284675740.asia-south1.run.app/prompt'),
+        headers: {'Content-Type': 'application/json'},
+        body: jsonEncode({
+          "prompt": "Generate an explaination for a student in ${APIs.me.classType} based on the following summary:" + initialResponse,
+        }),
+      );
+
+      if (response.statusCode == 200) {
+        var responseData = jsonDecode(response.body);
+        return responseData['response'].toString();
+      } else {
+        throw Exception("Processing failed: ${response.body}");
+      }
+    } catch (e) {
+      // If second API fails, return the initial response
+      return initialResponse;
+    }
+  }
+
   Future<void> _pickFile() async {
     FilePickerResult? result = await FilePicker.platform.pickFiles(
       type: FileType.custom,
-      allowedExtensions: ['jpg', 'png', 'pdf', 'docx'],
+      allowedExtensions: ['jpg', 'png', 'pdf', 'docx','jpeg'],
     );
 
     if (result != null && result.files.single.path != null) {
@@ -82,6 +109,7 @@ class _CreateLessonPageState extends State<CreateLessonPage> {
     return Scaffold(
       backgroundColor: Colors.black,
       appBar: AppBar(
+        leading: IconButton(onPressed: (){Navigator.pop(context);}, icon: const Icon(Icons.arrow_back, color: Colors.white,)),
         title: Text("Create Lesson", style: GoogleFonts.poppins(color: Colors.white)),
         backgroundColor: Colors.transparent,
         elevation: 0,
@@ -137,9 +165,7 @@ class _CreateLessonPageState extends State<CreateLessonPage> {
               decoration: _inputDecoration("Subject"),
             ),
 
-
-
-            const SizedBox(height: 30),
+            const SizedBox(height: 90),
             ElevatedButton(
               onPressed: () async {
                 if (_selectedFile != null) {

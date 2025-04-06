@@ -1,5 +1,5 @@
-// widgets/chat_input.dart
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 class ChatInput extends StatefulWidget {
   final Function(String) onSend;
@@ -15,25 +15,39 @@ class _ChatInputState extends State<ChatInput> {
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.all(8.0),
+    return Container(
+      decoration: BoxDecoration(
+        color: Colors.grey.shade50,
+        borderRadius: BorderRadius.circular(30),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.grey.withOpacity(0.1),
+            blurRadius: 8,
+            offset: const Offset(0, 2),
+          ),
+        ],
+      ),
       child: Row(
         children: [
           Expanded(
             child: TextField(
               controller: _controller,
+              style: GoogleFonts.poppins(fontSize: 14),
               decoration: InputDecoration(
                 hintText: 'Type your question...',
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(20),
-                ),
-                contentPadding: const EdgeInsets.symmetric(horizontal: 16),
+                hintStyle: GoogleFonts.poppins(
+                    color: Colors.grey.shade600,
+                    fontSize: 14),
+                border: InputBorder.none,
+                contentPadding: const EdgeInsets.symmetric(
+                    horizontal: 20, vertical: 16),
               ),
               onSubmitted: (value) => _sendMessage(),
             ),
           ),
           IconButton(
-            icon: const Icon(Icons.send),
+            icon: Icon(Icons.send_rounded,
+                color: Colors.deepPurpleAccent),
             onPressed: _sendMessage,
           ),
         ],
