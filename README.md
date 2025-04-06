@@ -1,6 +1,5 @@
-# gsccsg
-
-A new Flutter project.
+Lexio
+    Group project for Google Solutions Challenege
 
 ## Getting Started
 
