@@ -52,6 +52,8 @@ class _UserFormPageState extends State<UserFormPage> with SingleTickerProviderSt
         // Save the updated info
         await APIs.updateUserInfo();
 
+        print(APIs.me.classType + "\n" + APIs.me.id);
+
         // Navigate to HomePage after successful update
         if (mounted) {
           Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => HomePage()));

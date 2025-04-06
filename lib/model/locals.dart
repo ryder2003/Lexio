@@ -2,6 +2,8 @@
 import 'dart:convert';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import 'adhd_image.dart';
+
 class PreferencesHelper {
   // Keys
   static const String _lessonsKey = 'user_lessons_list';
@@ -70,24 +72,33 @@ class PreferencesHelper {
   // ADHD Image Caching --------------------------------------------------------
   static Future<void> cacheAdhdImage({
     required String lessonContent,
-    required String imageUrl,
+    required List<AdhdImage> images,
   }) async {
     final prefs = await SharedPreferences.getInstance();
     final key = _generateAdhdKey(lessonContent);
-    await prefs.setString(key, imageUrl);
+    final encodedData = jsonEncode(images.map((img) => img.toJson()).toList());
+    await prefs.setString(key, encodedData);
     await prefs.setInt('${key}_ts', DateTime.now().millisecondsSinceEpoch);
   }
 
-  static Future<String?> getCachedAdhdImage(String lessonContent) async {
+  static Future<List<AdhdImage>?> getCachedAdhdImage(String lessonContent) async {
     final prefs = await SharedPreferences.getInstance();
     final key = _generateAdhdKey(lessonContent);
     final timestamp = prefs.getInt('${key}_ts');
 
     if (timestamp != null && _isCacheValid(timestamp)) {
-      return prefs.getString(key);
+      final cachedData = prefs.getString(key);
+      if (cachedData != null) {
+        try {
+          final List<dynamic> decoded = jsonDecode(cachedData);
+          return decoded.map((e) => AdhdImage.fromJson(e)).toList();
+        } catch (e) {
+          // Handle legacy format if needed
+          return null;
+        }
+      }
     }
 
-    // Auto-clear expired cache
     await prefs.remove(key);
     await prefs.remove('${key}_ts');
     return null;
@@ -110,7 +121,7 @@ class PreferencesHelper {
 
   // Shared Helper Methods -----------------------------------------------------
   static String _generateAdhdKey(String content) {
-    return '${_adhdImagePrefix}${content.hashCode}';
+    return '$_adhdImagePrefix${content.hashCode}';
   }
 
   static bool _isCacheValid(int timestamp) {
@@ -128,5 +139,35 @@ class PreferencesHelper {
   static Future<Set<String>> getAllKeys() async {
     final prefs = await SharedPreferences.getInstance();
     return prefs.getKeys();
+  }
+
+  static Future<void> migrateLegacyCache() async {
+    final prefs = await SharedPreferences.getInstance();
+    final keys = prefs.getKeys().where((k) => k.startsWith(_adhdImagePrefix));
+
+    for (final key in keys) {
+      if (!key.endsWith('_ts')) {
+        final value = prefs.getString(key);
+        if (value != null) {
+          // Check if it's old URL list format
+          if (value.startsWith('[') && value.contains('http')) {
+            try {
+              final List<dynamic> urls = jsonDecode(value);
+              final List<AdhdImage> images = urls.map((url) => AdhdImage(
+                imageUrl: url.toString(),
+                caption: "Visual Learning Aid",
+              )).toList();
+
+              await cacheAdhdImage(
+                  lessonContent: key.replaceFirst(_adhdImagePrefix, ''),
+                  images: images
+              );
+            } catch (e) {
+              await prefs.remove(key);
+            }
+          }
+        }
+      }
+    }
   }
 }

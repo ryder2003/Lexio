@@ -63,6 +63,9 @@ class DefaultFirebaseOptions {
     messagingSenderId: '332729957931',
     projectId: 'solutions-63f02',
     storageBucket: 'solutions-63f02.firebasestorage.app',
+    androidClientId: '332729957931-h2q50e58vlv9o6vvf0l3vvgu8a3lol3f.apps.googleusercontent.com',
+    iosClientId: '332729957931-2nds3mh2u7jf42fb81kt0gqs8f48bgbi.apps.googleusercontent.com',
     iosBundleId: 'com.example.gsccsg',
   );
+
 }

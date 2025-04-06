@@ -1,10 +1,10 @@
 import 'dart:convert';
-import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:http/http.dart';
 import 'package:uuid/uuid.dart';
+import '../model/adhd_image.dart';
 import '../model/locals.dart';
 import '../model/my_user.dart';
 
@@ -94,37 +94,37 @@ class APIs {
   }
 
   //For image generation for adhd people
-  static Future<String> getAdhdImage(String lessonContent, String subject) async {
-    final cachedUrl = await PreferencesHelper.getCachedAdhdImage(lessonContent);
-    if (cachedUrl != null) return cachedUrl;
+  static Future<List<AdhdImage>> getAdhdImage(String lessonContent, String subject) async {
+    final cachedImages = await PreferencesHelper.getCachedAdhdImage(lessonContent);
+    if (cachedImages != null) return cachedImages;
 
-    // Implemented actual API call
-    final uuid = Uuid();
+    APIs.getSelfInfo();
+    const uuid = Uuid();
     String randomId = uuid.v4();
     final response = await post(
       Uri.parse('https://gsc-backend-959284675740.asia-south1.run.app/story-mode'),
-      headers: {
-        'Content-Type': 'application/json',
-      },
+      headers: {'Content-Type': 'application/json'},
       body: jsonEncode({
-        "userId" : me.id,
-        "lessonId" : randomId,
+        "userId": me.id,
+        "lessonId": randomId,
         "prompt": lessonContent,
         "subject": subject,
         "level": me.classType
-       }),
+      }),
     );
+
     if (response.statusCode == 200) {
       final data = jsonDecode(response.body);
-      final imageUrl = data['imageUrl'];
+      final images = (data['response'] as List)
+          .map((item) => AdhdImage.fromJson(item))
+          .toList();
 
-      // Cache the new URL
       await PreferencesHelper.cacheAdhdImage(
-          lessonContent: lessonContent,
-          imageUrl: imageUrl
+        lessonContent: lessonContent,
+        images: images,
       );
-      return imageUrl;
+      return images;
     }
-    throw Exception('Failed to generate ADHD image');
+    throw Exception('Failed to generate ADHD images');
   }
 }

@@ -5,6 +5,7 @@ import 'package:gsccsg/screens/homepage.dart';
 import 'package:flutter_colorpicker/flutter_colorpicker.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../api/apis.dart';
+import '../model/adhd_image.dart';
 import 'chat_screen.dart';
 
 class ResultsPage extends StatefulWidget {
@@ -26,6 +27,7 @@ class ResultsPage extends StatefulWidget {
 }
 
 class _ResultsPageState extends State<ResultsPage> {
+  late Future<List<AdhdImage>> _adhdImagesFuture;
   late Future<String> _fileSummaryFuture;
   bool _showAccessibilityPanel = false;
 
@@ -53,6 +55,7 @@ class _ResultsPageState extends State<ResultsPage> {
   @override
   void initState() {
     super.initState();
+    _adhdImagesFuture = APIs.getAdhdImage(widget.file ?? "", widget.subject);
     _fileSummaryFuture =
         widget.futureFileSummary ?? Future.value(widget.file ?? "No content available");
     _loadSettings();
@@ -467,18 +470,18 @@ class _ResultsPageState extends State<ResultsPage> {
                 final fileContent = snapshot.data ?? "No content available";
 
                 if (hasADHD) {
-                  return FutureBuilder<String>(
+                  return FutureBuilder<List<AdhdImage>>(
                     future: APIs.getAdhdImage(fileContent, widget.subject),
-                    builder: (context, imageSnapshot) {
+                    builder: (context, snapshot) {
                       // Handle loading state
-                      if (imageSnapshot.connectionState == ConnectionState.waiting) {
+                      if (snapshot.connectionState == ConnectionState.waiting) {
                         return Center(
                           child: Column(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
                               CircularProgressIndicator(color: _textColor),
                               const SizedBox(height: 20),
-                              Text("Creating visual representation...",
+                              Text("Creating visual representations...",
                                   style: _getContentTextStyle()),
                             ],
                           ),
@@ -486,16 +489,16 @@ class _ResultsPageState extends State<ResultsPage> {
                       }
 
                       // Handle error state
-                      if (imageSnapshot.hasError) {
+                      if (snapshot.hasError) {
                         return Center(
                           child: Column(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
-                              const Icon(Icons.error, color: Colors.red, size: 40),
+                              Icon(Icons.error, color: Colors.red, size: 40),
                               const SizedBox(height: 16),
-                              Text("Couldn't generate visual",
+                              Text("Couldn't generate visuals",
                                   style: _getHeaderTextStyle()),
-                              Text(imageSnapshot.error.toString(),
+                              Text(snapshot.error.toString(),
                                   style: _getContentTextStyle()),
                             ],
                           ),
@@ -503,46 +506,91 @@ class _ResultsPageState extends State<ResultsPage> {
                       }
 
                       // Handle empty data
-                      if (!imageSnapshot.hasData || imageSnapshot.data!.isEmpty) {
+                      if (!snapshot.hasData || snapshot.data!.isEmpty) {
                         return Center(
-                          child: Text("No visual available",
+                          child: Text("No visual content available",
                               style: _getHeaderTextStyle()),
                         );
                       }
 
-                      // Display the image
+                      // Display the carousel
+                      final images = snapshot.data!;
                       return Column(
                         children: [
-                          Container(
-                            height: 300,
-                            width: double.infinity,
-                            decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(15),
-                              color: Colors.black,
-                            ),
-                            child: Image.network(
-                              imageSnapshot.data!,
-                              fit: BoxFit.contain,
-                              loadingBuilder: (context, child, loadingProgress) {
-                                if (loadingProgress == null) return child;
-                                return Center(
-                                  child: CircularProgressIndicator(
-                                    value: loadingProgress.expectedTotalBytes != null
-                                        ? loadingProgress.cumulativeBytesLoaded /
-                                        loadingProgress.expectedTotalBytes!
-                                        : null,
-                                    color: _textColor,
+                          SizedBox(
+                            height: 350,
+                            child: PageView.builder(
+                              itemCount: images.length,
+                              controller: PageController(viewportFraction: 0.9),
+                              itemBuilder: (context, index) {
+                                final image = images[index];
+                                return Padding(
+                                  padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                                  child: Column(
+                                    children: [
+                                      Expanded(
+                                        child: ClipRRect(
+                                          borderRadius: BorderRadius.circular(15),
+                                          child: Image.network(
+                                            image.imageUrl,
+                                            fit: BoxFit.cover,
+                                            width: double.infinity,
+                                            loadingBuilder: (context, child, progress) {
+                                              if (progress == null) return child;
+                                              return Center(
+                                                child: CircularProgressIndicator(
+                                                  value: progress.expectedTotalBytes != null
+                                                      ? progress.cumulativeBytesLoaded /
+                                                      progress.expectedTotalBytes!
+                                                      : null,
+                                                  color: _textColor,
+                                                ),
+                                              );
+                                            },
+                                            errorBuilder: (context, error, stackTrace) =>
+                                                Center(
+                                                  child: Icon(Icons.broken_image,
+                                                      color: _textColor, size: 40),
+                                                ),
+                                          ),
+                                        ),
+                                      ),
+                                      const SizedBox(height: 10),
+                                      Padding(
+                                        padding: const EdgeInsets.symmetric(horizontal: 15),
+                                        child: Text(
+                                          image.caption,
+                                          style: _getContentTextStyle().copyWith(
+                                            fontSize: _fontSize * 0.9,
+                                            fontWeight: FontWeight.w500,
+                                          ),
+                                          textAlign: TextAlign.center,
+                                        ),
+                                      ),
+                                    ],
                                   ),
                                 );
                               },
-                              errorBuilder: (context, error, stackTrace) => Center(
-                                child: Icon(Icons.broken_image,
-                                    color: _textColor, size: 40),
-                              ),
                             ),
                           ),
+                          const SizedBox(height: 15),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: List.generate(images.length, (index) {
+                              return Container(
+                                width: 8,
+                                height: 8,
+                                margin: const EdgeInsets.symmetric(horizontal: 4),
+                                decoration: BoxDecoration(
+                                  shape: BoxShape.circle,
+                                  color: _textColor.withOpacity(
+                                      index == 0 ? 0.9 : 0.4), // Update this with actual page index
+                                ),
+                              );
+                            }),
+                          ),
                           const SizedBox(height: 20),
-                          Text("Visual Learning Aid",
+                          Text("Visual Learning Aids",
                               style: _getHeaderTextStyle()),
                         ],
                       );
@@ -576,15 +624,15 @@ class _ResultsPageState extends State<ResultsPage> {
                         const SizedBox(height: 30),
 
                         hasDyscalculia ?
-                          ElevatedButton(
-                            onPressed: () => Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (_) => ChatScreen(initialLesson: fileContent, user: widget.user),
-                              ),
+                        ElevatedButton(
+                          onPressed: () => Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (_) => ChatScreen(initialLesson: fileContent, user: widget.user),
                             ),
-                            child: const Text('Ask Questions'),
-                          ) : const SizedBox.shrink(),
+                          ),
+                          child: const Text('Ask Questions'),
+                        ) : const SizedBox.shrink(),
 
                         const SizedBox(height: 30),
                         SafeArea(
@@ -605,11 +653,11 @@ class _ResultsPageState extends State<ResultsPage> {
                           ),
                         ),
                         if (hasDyslexia)
-                            SafeArea(
-                              child: SizedBox(
-                                  height: 500,
-                                  child: _buildAccessibilityPanel()),
-                            ),
+                          SafeArea(
+                            child: SizedBox(
+                                height: 500,
+                                child: _buildAccessibilityPanel()),
+                          ),
                         const SizedBox(height: 60,)
                       ],
                     ),

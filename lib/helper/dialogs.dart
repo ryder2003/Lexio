@@ -11,4 +11,6 @@ class Dialogs{
     showDialog(context: context, builder: (_)=>Center(child:CircularProgressIndicator()));
     //Center wrapped otherwise it will cover whole screen
   }
+
+
 }

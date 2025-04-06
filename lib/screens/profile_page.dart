@@ -147,11 +147,30 @@ class _ProfilePageState extends State<ProfilePage> {
                   onPressed: () async{
                     Dialogs.showProgressLoader(context);
                     //sign out from the app
-                    await APIs.auth.signOut().then((value) async{
-                      await GoogleSignIn().signOut().then((value){
-                        Navigator.pushReplacement(context, MaterialPageRoute(builder: (_)=>const Login()));
-                      });
-                    });
+                    // await APIs.auth.signOut().then((value) async{
+                    //   await GoogleSignIn().signOut().then((value){
+                    //     Navigator.pushReplacement(context, MaterialPageRoute(builder: (_)=>const Login()));
+                    //
+                    //   });
+                    // });
+                    // Sign out from Firebase Auth
+                    await APIs.auth.signOut();
+
+                    // Sign out from Google
+                    await GoogleSignIn().signOut();
+
+                    // Wait briefly to ensure auth state updates completely
+                    await Future.delayed(const Duration(milliseconds: 500));
+
+                    if (!mounted) return;
+
+                    // Navigate to login screen with clear stack
+                    Navigator.pushAndRemoveUntil(
+                      context,
+                      MaterialPageRoute(builder: (_) => const Login()),
+                          (route) => false, // Remove all routes
+                    );
+
                   }, // Empty functionality for now
                   style: ElevatedButton.styleFrom(
                     backgroundColor: getAccentColor(),

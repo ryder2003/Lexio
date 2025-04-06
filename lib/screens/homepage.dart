@@ -1,13 +1,10 @@
-// homepage.dart (complete updated version)
 import 'dart:async';
-
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:gsccsg/model/locals.dart';
 import 'package:gsccsg/screens/create_lesson.dart';
 import 'package:gsccsg/screens/profile_page.dart';
 import 'package:gsccsg/screens/results_page.dart';
-
 import '../api/apis.dart';
 import '../model/my_user.dart';
 

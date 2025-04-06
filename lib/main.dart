@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:gsccsg/screens/splash_screen.dart';
 import 'firebase_options.dart';
+import 'model/locals.dart';
 
 //Global object for accessing Screen Size
 late Size mq;
@@ -14,8 +15,9 @@ void main() {
 
   //For setting orientation to portrait mode only
   SystemChrome.setPreferredOrientations(
-      [DeviceOrientation.portraitDown,DeviceOrientation.portraitUp]).then((value){
+      [DeviceOrientation.portraitDown,DeviceOrientation.portraitUp]).then((value) async {
     _initializeFirebase();
+    await PreferencesHelper.migrateLegacyCache();
     runApp(const MyApp());
   });
 }

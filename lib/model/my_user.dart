@@ -26,8 +26,8 @@ class MyUser {
     disorder = json['disorder']?? '';
     id = json['id']?? '';
     email = json['email']?? '';
-    age = json['push_token']?? '';
-    gender = json['push_token']?? '';
+    age = json['age']?? '';
+    gender = json['gender']?? '';
     classType = json['classType']?? '';
   }
 
@@ -40,7 +40,7 @@ class MyUser {
     _data['email'] = email;
     _data['age'] = age;
     _data['gender'] = gender;
-    _data['ClassType'] = classType;
+    _data['classType'] = classType;
     return _data;
   }
 }
