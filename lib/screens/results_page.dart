@@ -494,7 +494,7 @@ class _ResultsPageState extends State<ResultsPage> {
                           child: Column(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
-                              Icon(Icons.error, color: Colors.red, size: 40),
+                              const Icon(Icons.error, color: Colors.red, size: 40),
                               const SizedBox(height: 16),
                               Text("Couldn't generate visuals",
                                   style: _getHeaderTextStyle()),
@@ -592,7 +592,28 @@ class _ResultsPageState extends State<ResultsPage> {
                           const SizedBox(height: 20),
                           Text("Visual Learning Aids",
                               style: _getHeaderTextStyle()),
+
+                          const SizedBox(height:70),
+
+                          SafeArea(
+                            child: ElevatedButton(
+                              onPressed: () => Navigator.pushReplacement(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (_) => const HomePage())),
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: Colors.deepPurpleAccent,
+                                padding: const EdgeInsets.symmetric(
+                                    horizontal: 40, vertical: 15),
+                                shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(10)),
+                              ),
+                              child: Text("Back to Home",
+                                  style: _getContentTextStyle().copyWith(color: Colors.black)),
+                            ),
+                          ),
                         ],
+
                       );
                     },
                   );
