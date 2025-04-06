@@ -41,10 +41,4 @@ Lexio is designed with specific features to support individuals with dyslexia, A
 5.  **Math Help:** Users can input math problems, and the app will provide solutions and visual explanations.
 6.  **Profile:** Users can update their settings, customize preferences, and track their learning progress.
 
-## Installation
 
-Steps to install and run the application locally.
-
-## Usage
-
-Instructions on how to use the application and its features.
