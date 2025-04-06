@@ -423,7 +423,7 @@ class _ResultsPageState extends State<ResultsPage> {
         leading: IconButton(onPressed: (){
           _resetSettings();
           Navigator.pop(context);
-          }, icon: Icon(Icons.arrow_back, color: Colors.white,)),
+          }, icon: const Icon(Icons.arrow_back, color: Colors.white,)),
         title: Text("Results", style: _getHeaderTextStyle()),
         backgroundColor: Colors.transparent,
         elevation: 0,
