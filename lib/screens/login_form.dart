@@ -4,6 +4,8 @@ import '../api/apis.dart';
 import 'homepage.dart'; // Import HomePage for navigation
 
 class UserFormPage extends StatefulWidget {
+  const UserFormPage({super.key});
+
   @override
   _UserFormPageState createState() => _UserFormPageState();
 }
@@ -13,7 +15,7 @@ class _UserFormPageState extends State<UserFormPage> with SingleTickerProviderSt
   String? name, disorderType, gender, studentClass;
   int? age;
 
-  final List<String> disorderTypes = ["ADHD", "Dyslexia", "Dysgraphia", "Dyscalculia"];
+  final List<String> disorderTypes = ["ADHD", "Dyslexia", "Dyscalculia"];
   final List<String> genders = ["Male", "Female", "Other"];
   final List<String> classes = ["Preschool", "Primary School", "Middle School", "High School", "Undergrad", "Postgraduate"];
 
@@ -23,7 +25,7 @@ class _UserFormPageState extends State<UserFormPage> with SingleTickerProviderSt
   @override
   void initState() {
     super.initState();
-    _controller = AnimationController(vsync: this, duration: Duration(milliseconds: 300));
+    _controller = AnimationController(vsync: this, duration: const Duration(milliseconds: 300));
     _buttonScale = Tween<double>(begin: 1.0, end: 1.1).animate(
       CurvedAnimation(parent: _controller, curve: Curves.easeInOut),
     );
@@ -52,11 +54,9 @@ class _UserFormPageState extends State<UserFormPage> with SingleTickerProviderSt
         // Save the updated info
         await APIs.updateUserInfo();
 
-        print(APIs.me.classType + "\n" + APIs.me.id);
-
         // Navigate to HomePage after successful update
         if (mounted) {
-          Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => HomePage()));
+          Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => const HomePage()));
         }
       } catch (e) {
         print("Error updating user info: $e");
@@ -79,7 +79,7 @@ class _UserFormPageState extends State<UserFormPage> with SingleTickerProviderSt
       ),
       body: Center(
         child: Padding(
-          padding: EdgeInsets.symmetric(horizontal: 20),
+          padding: const EdgeInsets.symmetric(horizontal: 20),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
@@ -90,19 +90,19 @@ class _UserFormPageState extends State<UserFormPage> with SingleTickerProviderSt
                     shrinkWrap: true,
                     children: [
                       _buildGlassTextField("Full Name", Icons.person, (value) => name = value),
-                      SizedBox(height: 20),
+                      const SizedBox(height: 20),
                       _buildGlassDropdown("Select Disorder Type", disorderTypes, Icons.healing, (value) => disorderType = value),
-                      SizedBox(height: 20),
+                      const SizedBox(height: 20),
                       _buildGlassTextField("Age", Icons.calendar_today, (value) => age = int.tryParse(value!), keyboardType: TextInputType.number),
-                      SizedBox(height: 20),
+                      const SizedBox(height: 20),
                       _buildGlassDropdown("Select Gender", genders, Icons.wc, (value) => gender = value),
-                      SizedBox(height: 20),
+                      const SizedBox(height: 20),
                       _buildGlassDropdown("Select Class", classes, Icons.school, (value) => studentClass = value),
                     ],
                   ),
                 ),
               ),
-              SizedBox(height: 20),
+              const SizedBox(height: 20),
               ScaleTransition(
                 scale: _buttonScale,
                 child: GestureDetector(
@@ -111,9 +111,9 @@ class _UserFormPageState extends State<UserFormPage> with SingleTickerProviderSt
                     height: 55,
                     width: double.infinity,
                     decoration: BoxDecoration(
-                      gradient: LinearGradient(colors: [Colors.deepPurpleAccent, Colors.purple]),
+                      gradient: const LinearGradient(colors: [Colors.deepPurpleAccent, Colors.purple]),
                       borderRadius: BorderRadius.circular(15),
-                      boxShadow: [BoxShadow(color: Colors.black26, blurRadius: 8, spreadRadius: 2)],
+                      boxShadow: const [BoxShadow(color: Colors.black26, blurRadius: 8, spreadRadius: 2)],
                     ),
                     child: Center(
                       child: Text("Submit", style: GoogleFonts.poppins(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.white)),
@@ -121,7 +121,7 @@ class _UserFormPageState extends State<UserFormPage> with SingleTickerProviderSt
                   ),
                 ),
               ),
-              SizedBox(height: 30),
+              const SizedBox(height: 30),
             ],
           ),
         ),
@@ -132,7 +132,7 @@ class _UserFormPageState extends State<UserFormPage> with SingleTickerProviderSt
   Widget _buildGlassTextField(String label, IconData icon, Function(String?) onSave, {TextInputType keyboardType = TextInputType.text}) {
     return TextFormField(
       keyboardType: keyboardType,
-      style: TextStyle(color: Colors.white),
+      style: const TextStyle(color: Colors.white),
       decoration: _inputDecoration(label, icon),
       validator: (value) => value!.isEmpty ? "Enter $label" : null,
       onSaved: onSave,
@@ -143,7 +143,7 @@ class _UserFormPageState extends State<UserFormPage> with SingleTickerProviderSt
     return DropdownButtonFormField<String>(
       dropdownColor: Colors.grey.shade900,
       decoration: _inputDecoration(label, icon),
-      style: TextStyle(color: Colors.white),
+      style: const TextStyle(color: Colors.white),
       items: items.map((item) => DropdownMenuItem(value: item, child: Text(item, style: GoogleFonts.poppins(fontSize: 16, color: Colors.white)))).toList(),
       validator: (value) => value == null ? "Select $label" : null,
       onSaved: onSave,
@@ -157,7 +157,7 @@ class _UserFormPageState extends State<UserFormPage> with SingleTickerProviderSt
       labelStyle: GoogleFonts.poppins(fontSize: 16, color: Colors.white70),
       prefixIcon: Icon(icon, color: Colors.white70),
       border: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide.none),
-      contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+      contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
     );
   }
 }

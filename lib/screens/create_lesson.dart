@@ -44,7 +44,7 @@ class _CreateLessonPageState extends State<CreateLessonPage> {
 
       if (response.statusCode == 200) {
         var responseData = jsonDecode(response.body);
-        String responseString = responseData.toString();
+        String responseString = responseData['summary'].toString();
 
         await PreferencesHelper.saveLessonDetails(
           userId: widget.user.id,
