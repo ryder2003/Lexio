@@ -61,3 +61,14 @@ A transformative platform designed to make education inclusive for neurodiverse 
 
 4. Start the backend server and frontend app.
 
+---
+
+
+### 🔮 Future Development
+**•ADHD-Friendly Educational Reels:** Short, funny videos with animations.
+**•Custom AI Models:** Personalized learning based on user interaction data.
+**•Expanded Neurodiverse Support:** Autism, dyspraxia, OCD, and auditory processing disorder tools.
+
+---
+### 🤝 Contributing
+We welcome contributions! Fork the repositories, create a branch, and submit a PR. Ensure you follow the code style guidelines.
