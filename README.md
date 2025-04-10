@@ -65,9 +65,9 @@ A transformative platform designed to make education inclusive for neurodiverse 
 
 
 ### 🔮 Future Development
-**•ADHD-Friendly Educational Reels:** Short, funny videos with animations.
-**•Custom AI Models:** Personalized learning based on user interaction data.
-**•Expanded Neurodiverse Support:** Autism, dyspraxia, OCD, and auditory processing disorder tools.
+- **ADHD-Friendly Educational Reels:** Short, funny videos with animations.
+- **Custom AI Models:** Personalized learning based on user interaction data.
+- **Expanded Neurodiverse Support:** Autism, dyspraxia, OCD, and auditory processing disorder tools.
 
 ---
 ### 🤝 Contributing
