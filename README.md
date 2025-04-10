@@ -54,3 +54,10 @@ A transformative platform designed to make education inclusive for neurodiverse 
    ```bash
    git clone https://github.com/ryder2003/Lexio.git  # Frontend
    git clone https://github.com/saeitoshi-10/qsc-backend.git  # Backend
+
+2. Set up Firebase and Google Cloud credentials (refer to backend repo for details).
+
+3. Run flutter pub get and npm install for dependencies.
+
+4. Start the backend server and frontend app.
+
