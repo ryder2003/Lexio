@@ -1,7 +1,7 @@
 # Neurodivergent Learning Assistant 👨💻🧠
 
 [![GitHub](https://img.shields.io/badge/Frontend-Repo-blue)](https://github.com/ryder2003/Lexio.git)
-[![GitHub](https://img.shields.io/badge/Backend-Repo-green)](https://github.com/saeitoshi-10/qsc-backend)
+[![GitHub](https://img.shields.io/badge/Backend-Repo-green)](https://github.com/saeitoshi-10/gsc-backend)
 [![Demo Video](https://img.shields.io/badge/Demo-Video-red)](https://www.youtube.com/shorts/9rLlLMds7ZY)
 [![MVP APK](https://img.shields.io/badge/Download-MVP_APK-orange)](https://github.com/ryder2003/Lexio/releases/download/v1.0.0/app-release.apk)
 
@@ -24,7 +24,6 @@ A transformative platform designed to make education inclusive for neurodiverse 
 ### **Dyscalculia Support**
 - Breaks down math problems into step-by-step interactive explanations.
 - AI chatbot for real-time doubt resolution.
-- Visual aids for numerical and spatial understanding.
 
 ### **Universal Features**
 - Works with **any subject or existing material**.
