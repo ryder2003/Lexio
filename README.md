@@ -1,44 +1,57 @@
-# Lexio - Empowering Learning for All
+# Neurodivergent Learning Assistant 👨💻🧠
 
-Lexio is a Flutter-based mobile application designed to assist users with dyslexia, ADHD, and dyscalculia by providing tailored support and learning tools. This project was developed as part of the Google Solutions Challenge.
+[![GitHub](https://img.shields.io/badge/Frontend-Repo-blue)](https://github.com/ryder2003/Lexio.git)
+[![GitHub](https://img.shields.io/badge/Backend-Repo-green)](https://github.com/saeitoshi-10/qsc-backend)
+[![Demo Video](https://img.shields.io/badge/Demo-Video-red)](https://www.youtube.com/shorts/9rLlLMds7ZY)
+[![MVP APK](https://img.shields.io/badge/Download-MVP_APK-orange)](https://github.com/ryder2003/Lexio/releases/download/v1.0.0/app-release.apk)
 
-## Getting Started
+A transformative platform designed to make education inclusive for neurodiverse learners by converting standard materials into personalized, accessible formats. Built by **Team DevAlchemists**.
 
-This project is a Flutter application, built to help people with Dyslexia, ADHD and dyscalculia.
+---
 
-A few resources to get you started if this is your first Flutter project:
+## 🚀 Features
 
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
+### **Dyslexia Support**
+- Converts uploaded materials (PDFs, images, docs) into simplified summaries.
+- Uses dyslexia-friendly fonts (e.g., OpenDyslexic) with customizable formatting.
+- Reduces cognitive overload through structured text layouts.
 
-## App Functionality and Features
+### **ADHD Support**
+- Generates engaging meme-based summaries to sustain attention.
+- Uses humor and visuals to boost concept retention.
+- Bite-sized content tailored for shorter attention spans.
 
-Lexio is designed with specific features to support individuals with dyslexia, ADHD, and dyscalculia:
+### **Dyscalculia Support**
+- Breaks down math problems into step-by-step interactive explanations.
+- AI chatbot for real-time doubt resolution.
+- Visual aids for numerical and spatial understanding.
 
-### Dyslexia Support
+### **Universal Features**
+- Works with **any subject or existing material**.
+- Personalized learning paths based on neurotype.
+- Cross-platform accessibility (mobile-first design).
 
-*   **Text Conversion:** Users can upload or capture images of text, and Lexio will convert it into a more readable format. This includes using dyslexia-friendly fonts, spacing, and text-to-speech capabilities.
-*   **Customizable Reading:** Users can customize the font, text size, spacing, and color contrast to suit their personal reading needs.
-*   **Text-to-Speech:** Lexio features an integrated text-to-speech function, allowing users to listen to the converted text.
+---
 
-### ADHD Support
+## ⚙️ Technologies Used
 
-*   **Visual Summaries:** The app can generate visual summaries and simplified bullet points of large texts, making it easier for users with ADHD to grasp the main ideas.
-*   **Interactive Engagement:** Incorporates features that encourage interaction and maintain focus, such as progress tracking, quizzes, and interactive exercises.
-*  **Reminders and scheduling**: The application allows you to set reminders and schedule study sessions
+- **Frontend**: Flutter
+- **Backend**: Node.js, Firebase (Authentication, Firestore)
+- **Cloud**: Google Cloud Platform (Cloud Run, Cloud Storage)
+- **AI/ML**: Gemini APIs, Imagen 3, Custom-trained models
+- **Tools**: IDX, Gemini Code Assist
 
-### Dyscalculia Support
+---
 
-*   **Interactive Math Help:** Lexio offers interactive tools for solving math problems, providing step-by-step guides and visual aids to understand calculations.
-*   **Visual Aids:** Uses visual representations of numbers and problems to help users better understand mathematical concepts.
-* **Exercises:** The application offers a library of exercices in order to test and enhance user's progress
-### General User Flow
+## 📥 Installation
 
-1.  **Login/Registration:** Users can log in or register using a phone number or Google account.
-2.  **Homepage:** Access the main features, including image capture/upload, text conversion, math problem solver, and profile.
-3.  **Image Capture/Upload:** Users can capture images or upload them from their device's gallery.
-4.  **Text Conversion/Analysis:** The app processes the text, applies dyslexia-friendly formatting, and generates visual summaries if required.
-5.  **Math Help:** Users can input math problems, and the app will provide solutions and visual explanations.
-6.  **Profile:** Users can update their settings, customize preferences, and track their learning progress.
+### For End Users
+1. Download the [MVP APK](https://github.com/ryder2003/Lexio/releases/download/v1.0.0/app-release.apk) (Android only).
+2. Install and open the app.
+3. Upload learning materials (PDF, image, or doc) and select your preferred neurotype support.
 
-
+### For Developers
+1. Clone the repositories:
+   ```bash
+   git clone https://github.com/ryder2003/Lexio.git  # Frontend
+   git clone https://github.com/saeitoshi-10/qsc-backend.git  # Backend
